@@ -1,17 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Conference } from '../../Models/Conference';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {  Card } from '../card/card';
 @Component({
   selector: 'app-conference-list',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Card],
   templateUrl: './conference-list.html',
   styleUrl: './conference-list.css',
 })
 export class ConferenceList {
+  x=signal(2);
   searchItem: string = '';
-  favoriteList: Conference[] = [];
-  confList : Conference[] = [{
+  favoriteList=signal<Conference[]>([]);
+  confList=signal<Conference[]>([{
 
    id: 1,
 
@@ -100,12 +102,18 @@ export class ConferenceList {
 
   },
 
- ];
+ ]);
+ constructor() {
+  console.log(this.x());
+  this.x.set(3);
+  console.log(this.x());
+  this.x.update(x => x + 1);
+ }
  addToFavorites(conf: Conference) {
-  if(this.favoriteList.includes(conf)){
+  if(this.favoriteList().includes(conf)){
     return alert('Cette conférence est déjà dans la liste des favoris !');
   }else{
-  return this.favoriteList.push(conf);
+  return this.favoriteList().push(conf);
   }
  }
 
@@ -113,6 +121,6 @@ export class ConferenceList {
   return conf.nbLikes++;
  }
  filter() {
-  return this.confList.filter(conf => conf.titre.toLocaleLowerCase().includes(this.searchItem.toLowerCase()));
+  return this.confList().filter(conf => conf.titre.toLocaleLowerCase().includes(this.searchItem.toLowerCase()));
  }
 }
